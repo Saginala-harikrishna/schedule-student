@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">ScheduleStudent</string>
+    <string name="welcome_text">Welcome to Schedule Student</string>
+    <string name="get_started">Get Started</string>
+
+</resources>
