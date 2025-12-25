@@ -35,6 +35,7 @@ class PlanAdapter(
         holder.tvTitle.text = plan.title
         holder.tvDate.text = plan.date
 
+        // Prevent checkbox recycling issues
         holder.cbCompleted.setOnCheckedChangeListener(null)
         holder.cbCompleted.isChecked = plan.isCompleted
 
@@ -55,4 +56,14 @@ class PlanAdapter(
     }
 
     override fun getItemCount(): Int = plans.size
+
+    /**
+     * 🔑 IMPORTANT:
+     * Used by Fragment to refresh data safely
+     */
+    fun updateList(newPlans: List<Plan>) {
+        plans.clear()
+        plans.addAll(newPlans)
+        notifyDataSetChanged()
+    }
 }

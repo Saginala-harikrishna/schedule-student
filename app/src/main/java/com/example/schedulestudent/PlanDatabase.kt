@@ -6,13 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Plan::class],
-    version = 1,
+    entities = [
+        Plan::class,
+        RangeTarget::class
+    ],
+    version = 2,
     exportSchema = false
 )
 abstract class PlanDatabase : RoomDatabase() {
 
     abstract fun planDao(): PlanDao
+
+    abstract fun rangeTargetDao(): RangeTargetDao
 
     companion object {
 
@@ -25,7 +30,10 @@ abstract class PlanDatabase : RoomDatabase() {
                     context.applicationContext,
                     PlanDatabase::class.java,
                     "plan_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+
                 INSTANCE = instance
                 instance
             }
