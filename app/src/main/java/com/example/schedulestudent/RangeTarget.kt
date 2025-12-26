@@ -5,16 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "range_targets")
 data class RangeTarget(
-
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
     val title: String,
+    val startDate: Long,
+    val endDate: Long,
 
-    // Store dates as String for simplicity (dd/MM/yyyy)
-    val startDate: String,
-    val endDate: String,
-
-    // Progress between 0–100
-    var progress: Int
+    var progress: Int   // ✅ MUST be var
 )
+

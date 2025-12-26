@@ -22,17 +22,22 @@
             android:id="@+id/etStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Start date"
+            android:hint="Start Date"
             android:focusable="false"
-            android:layout_marginTop="12dp"/>
+            android:clickable="true"
+            android:inputType="none" />
 
         <EditText
             android:id="@+id/etEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="End date"
+            android:hint="End Date"
             android:focusable="false"
-            android:layout_marginTop="12dp"/>
+            android:clickable="true"
+            android:inputType="none" />
+
+
+
 
         <EditText
             android:id="@+id/etProgress"

@@ -6,70 +6,60 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.Worker
+import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
 class NotificationWorker(
     context: Context,
-    workerParams: WorkerParameters
-) : Worker(context, workerParams) {
+    params: WorkerParameters
+) : CoroutineWorker(context, params) {
 
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
 
-        Log.d("NOTIFY_WORKER", "✅ NotificationWorker executed")
+        // 🔹 Get DB
+        val db = PlanDatabase.getDatabase(applicationContext)
 
-        // 🔹 STEP 1: Compute notifications (TEMP TEST DATA)
-        val result = NotificationResult(
-            pendingCurrentTargets = listOf("Math Homework", "DSA Practice"),
-            endingTomorrowRangeTargets = listOf("Semester Study"),
-            overdueRangeTargets = listOf("Fitness Goal")
-        )
+        // 🔹 REAL DATA FROM ROOM
+        val plans = db.planDao().getAllPlans()
+        val rangeTargets = db.rangeTargetDao().getAllRangeTargets()
 
-        // 🔹 STEP 2: Save to cache
+        // 🔹 Compute notifications (REAL LOGIC)
+        val result = NotificationEngine.compute(plans, rangeTargets)
+
+        // 🔹 Save for NotificationCenter screen
         NotificationCache.save(result)
-        Log.d("NOTIFY_WORKER", "📦 Cache updated: $result")
 
-        // 🔹 STEP 3: Show system notification
-        showNotification(result)
+        // 🔹 Show notification only if needed
+        if (
+            result.pendingCurrentTargets.isNotEmpty() ||
+            result.endingTomorrowRangeTargets.isNotEmpty() ||
+            result.overdueRangeTargets.isNotEmpty()
+        ) {
+            showSystemNotification()
+        }
 
         return Result.success()
     }
 
-    private fun showNotification(result: NotificationResult) {
+    private fun showSystemNotification() {
 
         val channelId = "daily_notifications"
-
-        val notificationManager =
+        val manager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
 
-        // 🔔 Create channel (Android 8+)
+        // 🔹 Channel (Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "Daily Notifications",
-                NotificationManager.IMPORTANCE_HIGH // ✅ IMPORTANT
-            ).apply {
-                description = "Daily task reminders"
-            }
-            notificationManager.createNotificationChannel(channel)
+                "Daily Task Reminders",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            manager.createNotificationChannel(channel)
         }
 
-        // 🔹 Build meaningful notification text
-        val totalCount =
-            result.pendingCurrentTargets.size +
-                    result.endingTomorrowRangeTargets.size +
-                    result.overdueRangeTargets.size
-
-        val contentText =
-            if (totalCount > 0)
-                "You have $totalCount tasks that need attention"
-            else
-                "You are all caught up 🎉"
-
-        // 🔹 Intent to open NotificationCenter
+        // 🔹 Open NotificationCenter
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             putExtra("open_notification_center", true)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -85,14 +75,11 @@ class NotificationWorker(
         val notification = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Today's Tasks Reminder")
-            .setContentText(contentText)
+            .setContentText("You have tasks that need attention today")
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // ✅ For pre-O devices
             .build()
 
-        notificationManager.notify(1001, notification)
-
-        Log.d("NOTIFY_WORKER", "🔔 System notification shown")
+        manager.notify(1001, notification)
     }
 }

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.work.WorkManager
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
+
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.time.Duration
@@ -143,20 +143,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun scheduleDailyNotification() {
 
-        WorkManager.getInstance(this).cancelAllWork()
-
         val workRequest =
-            OneTimeWorkRequestBuilder<NotificationWorker>()
-                .setInitialDelay(10, TimeUnit.SECONDS)
+            PeriodicWorkRequestBuilder<NotificationWorker>(1, TimeUnit.DAYS)
+                .setInitialDelay(calculateInitialDelay(), TimeUnit.MILLISECONDS)
                 .build()
 
-        WorkManager.getInstance(this).enqueue(workRequest)
+        WorkManager.getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "daily_notification_work",
+                ExistingPeriodicWorkPolicy.UPDATE,
+                workRequest
+            )
     }
 
-
     private fun calculateInitialDelay(): Long {
-        // 🔴 DEMO ONLY: trigger after 10 seconds
-        return 10_000L
+        val now = LocalDateTime.now()
+        val nextRun = now.withHour(6).withMinute(0).withSecond(0)
+
+        val scheduled =
+            if (now.isAfter(nextRun)) nextRun.plusDays(1)
+            else nextRun
+
+        return Duration.between(now, scheduled).toMillis()
     }
 
 }

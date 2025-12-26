@@ -18,19 +18,19 @@ interface PlanDao {
     @Delete
     suspend fun deletePlan(plan: Plan)
 
-    // 🔹 All plans (optional, still useful)
+    // 🔹 All plans
     @Query("SELECT * FROM plans ORDER BY id DESC")
     suspend fun getAllPlans(): List<Plan>
 
-    // 🔹 Pending plans (IMPORTANT)
+    // 🔹 Pending plans (used for notifications)
     @Query("SELECT * FROM plans WHERE isCompleted = 0 ORDER BY id DESC")
     suspend fun getPendingPlans(): List<Plan>
 
-    // 🔹 Completed plans (IMPORTANT)
+    // 🔹 Completed plans
     @Query("SELECT * FROM plans WHERE isCompleted = 1 ORDER BY id DESC")
     suspend fun getCompletedPlans(): List<Plan>
 
-    // 🔹 Used for Edit flow
+    // 🔹 Edit flow
     @Query("SELECT * FROM plans WHERE id = :id LIMIT 1")
     suspend fun getPlanById(id: Int): Plan?
 }
