@@ -67,6 +67,14 @@ class RangeTargetFragment : Fragment() {
             )
         }
 
+        arguments?.getString(NotificationNav.ARG_SOURCE)?.let { source ->
+            if (source == NotificationNav.FROM_RANGE) {
+                // Optional future enhancement:
+                // highlight ending/overdue targets
+            }
+        }
+
+
         return view
     }
 

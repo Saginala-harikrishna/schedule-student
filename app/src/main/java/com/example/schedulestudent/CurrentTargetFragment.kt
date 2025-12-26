@@ -97,6 +97,14 @@ class CurrentTargetFragment : Fragment() {
             startActivity(intent)
         }
 
+        arguments?.getString(NotificationNav.ARG_SOURCE)?.let { source ->
+            if (source == NotificationNav.FROM_CURRENT) {
+                // Optional future enhancement:
+                // scroll to Pending section
+            }
+        }
+
+
         return view
     }
 
