@@ -1,67 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
     android:layout_marginBottom="8dp"
-    android:background="@android:color/white"
-    android:elevation="4dp">
+    app:cardCornerRadius="18dp"
+    app:cardElevation="1.5dp"
+    app:cardBackgroundColor="@android:color/white"
+    android:foreground="?attr/selectableItemBackground">
 
-    <!-- Completion Checkbox -->
-    <CheckBox
-        android:id="@+id/cbCompleted"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
 
-    <!-- Plan Title -->
-    <TextView
-        android:id="@+id/tvPlanTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Plan Title"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/cbCompleted"
-        app:layout_constraintTop_toTopOf="@id/cbCompleted"
-        app:layout_constraintEnd_toStartOf="@id/btnEdit"/>
+        <!-- Completion Checkbox -->
+        <CheckBox
+            android:id="@+id/cbCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- Plan Date -->
-    <TextView
-        android:id="@+id/tvPlanDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="12/01/2025"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/cbCompleted"
-        app:layout_constraintTop_toBottomOf="@id/tvPlanTitle"/>
+        <!-- Plan Title -->
+        <TextView
+            android:id="@+id/tvPlanTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Plan Title"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginStart="6dp"
+            app:layout_constraintStart_toEndOf="@id/cbCompleted"
+            app:layout_constraintTop_toTopOf="@id/cbCompleted"
+            app:layout_constraintEnd_toStartOf="@id/btnEdit"/>
 
-    <!-- Edit Button -->
-    <ImageButton
-        android:id="@+id/btnEdit"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_edit"
-        android:contentDescription="Edit Plan"
-        app:layout_constraintEnd_toStartOf="@id/btnDelete"
-        app:layout_constraintTop_toTopOf="parent"/>
+        <!-- Plan Date -->
+        <TextView
+            android:id="@+id/tvPlanDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12/01/2025"
+            android:textSize="12.5sp"
+            android:textColor="#757575"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="2dp"
+            app:layout_constraintStart_toEndOf="@id/cbCompleted"
+            app:layout_constraintTop_toBottomOf="@id/tvPlanTitle"/>
 
-    <!-- Delete Button -->
-    <ImageButton
-        android:id="@+id/btnDelete"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="Delete Plan"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        <!-- Edit Button -->
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            android:contentDescription="Edit Plan"
+            app:layout_constraintEnd_toStartOf="@id/btnDelete"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Delete Button -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="Delete Plan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

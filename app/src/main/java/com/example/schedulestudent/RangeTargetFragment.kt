@@ -1,6 +1,7 @@
 package com.example.schedulestudent
+import androidx.lifecycle.lifecycleScope
 
-import android.content.Intent   // ✅ REQUIRED
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.launch
@@ -40,19 +42,20 @@ class RangeTargetFragment : Fragment() {
         adapter = RangeTargetAdapter(
             mutableListOf(),
             onUpdate = { target ->
-                lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     database.rangeTargetDao().updateRangeTarget(target)
                 }
             },
             onDelete = { target ->
-                lifecycleScope.launch {
+                viewLifecycleOwner.lifecycleScope.launch {
                     database.rangeTargetDao().deleteRangeTarget(target)
                     loadRangeTargets()
                 }
             },
             onEdit = { target ->
-                val intent = Intent(requireContext(), AddRangeTargetActivity::class.java)
-                intent.putExtra("RANGE_ID", target.id)
+                val intent =
+                    Intent(requireContext(), AddRangeTargetActivity::class.java)
+                intent.putExtra("range_target_id", target.id) // ✅ FIXED
                 startActivity(intent)
             }
         )
@@ -67,14 +70,6 @@ class RangeTargetFragment : Fragment() {
             )
         }
 
-        arguments?.getString(NotificationNav.ARG_SOURCE)?.let { source ->
-            if (source == NotificationNav.FROM_RANGE) {
-                // Optional future enhancement:
-                // highlight ending/overdue targets
-            }
-        }
-
-
         return view
     }
 
@@ -84,7 +79,7 @@ class RangeTargetFragment : Fragment() {
     }
 
     private fun loadRangeTargets() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val list = database.rangeTargetDao().getAllRangeTargets()
             adapter.updateList(list)
         }

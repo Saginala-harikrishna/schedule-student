@@ -1,10 +1,12 @@
 package com.example.schedulestudent
 
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 object NotificationEngine {
+
+    private val formatter =
+        DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     fun compute(
         plans: List<Plan>,
@@ -23,8 +25,8 @@ object NotificationEngine {
         val endingTomorrowRangeTargets =
             rangeTargets
                 .filter {
-                    val endDate = it.endDate.toLocalDate()
-                    endDate == today.plusDays(1)
+                    val endDate = parseDate(it.endDate)
+                    endDate != null && endDate == today.plusDays(1)
                 }
                 .map { it.title }
 
@@ -32,8 +34,8 @@ object NotificationEngine {
         val overdueRangeTargets =
             rangeTargets
                 .filter {
-                    val endDate = it.endDate.toLocalDate()
-                    endDate.isBefore(today)
+                    val endDate = parseDate(it.endDate)
+                    endDate != null && endDate.isBefore(today)
                 }
                 .map { it.title }
 
@@ -44,9 +46,12 @@ object NotificationEngine {
         )
     }
 
-    // 🔹 EXTENSION FUNCTION (KEY FIX)
-    private fun Long.toLocalDate(): LocalDate =
-        Instant.ofEpochMilli(this)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
+    // 🔹 SAFE STRING → LocalDate PARSER
+    private fun parseDate(date: String): LocalDate? {
+        return try {
+            LocalDate.parse(date, formatter)
+        } catch (e: Exception) {
+            null   // prevents crash if data is malformed
+        }
+    }
 }

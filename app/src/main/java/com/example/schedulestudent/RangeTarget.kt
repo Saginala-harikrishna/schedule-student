@@ -9,8 +9,9 @@ data class RangeTarget(
     val id: Int = 0,
 
     val title: String,
-    val startDate: Long,
-    val endDate: Long,
+    val startDate: String,
+    val endDate: String,
+
 
     var progress: Int   // ✅ MUST be var
 )

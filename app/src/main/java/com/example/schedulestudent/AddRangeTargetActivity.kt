@@ -21,6 +21,7 @@ class AddRangeTargetActivity : AppCompatActivity() {
     private lateinit var etEndDate: EditText
     private lateinit var etProgress: EditText
 
+    // UI format (what user sees)
     private val dateFormat =
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -59,8 +60,8 @@ class AddRangeTargetActivity : AppCompatActivity() {
 
                 target?.let {
                     etTitle.setText(it.title)
-                    etStartDate.setText(dateFormat.format(it.startDate))
-                    etEndDate.setText(dateFormat.format(it.endDate))
+                    etStartDate.setText(it.startDate) // String now
+                    etEndDate.setText(it.endDate)     // String now
                     etProgress.setText(it.progress.toString())
                 }
             }
@@ -71,22 +72,59 @@ class AddRangeTargetActivity : AppCompatActivity() {
             lifecycleScope.launch {
 
                 val title = etTitle.text.toString().trim()
-                val progress = etProgress.text.toString().toIntOrNull() ?: 0
+                val startDate = etStartDate.text.toString().trim()
+                val endDate = etEndDate.text.toString().trim()
+                val progressText = etProgress.text.toString().trim()
 
-                val startDateMillis =
-                    dateFormat.parse(etStartDate.text.toString())?.time
-                        ?: return@launch
+                // -------------------------
+                // ✅ VALIDATIONS
+                // -------------------------
 
-                val endDateMillis =
-                    dateFormat.parse(etEndDate.text.toString())?.time
-                        ?: return@launch
+                if (title.isEmpty()) {
+                    etTitle.error = "Title is required"
+                    return@launch
+                }
+
+                if (startDate.isEmpty()) {
+                    etStartDate.error = "Start date is required"
+                    return@launch
+                }
+
+                if (endDate.isEmpty()) {
+                    etEndDate.error = "End date is required"
+                    return@launch
+                }
+
+                if (progressText.isEmpty()) {
+                    etProgress.error = "Progress is required"
+                    return@launch
+                }
+
+                val progress = progressText.toIntOrNull()
+                if (progress == null || progress !in 0..100) {
+                    etProgress.error = "Progress must be between 0 and 100"
+                    return@launch
+                }
+
+                // Validate date logic
+                val start = dateFormat.parse(startDate)
+                val end = dateFormat.parse(endDate)
+
+                if (start != null && end != null && end.before(start)) {
+                    etEndDate.error = "End date cannot be before start date"
+                    return@launch
+                }
+
+                // -------------------------
+                // ✅ INSERT / UPDATE
+                // -------------------------
 
                 if (editTargetId == -1) {
                     db.rangeTargetDao().insertRangeTarget(
                         RangeTarget(
                             title = title,
-                            startDate = startDateMillis,
-                            endDate = endDateMillis,
+                            startDate = startDate, // String
+                            endDate = endDate,     // String
                             progress = progress
                         )
                     )
@@ -95,8 +133,8 @@ class AddRangeTargetActivity : AppCompatActivity() {
                         RangeTarget(
                             id = editTargetId,
                             title = title,
-                            startDate = startDateMillis,
-                            endDate = endDateMillis,
+                            startDate = startDate,
+                            endDate = endDate,
                             progress = progress
                         )
                     )

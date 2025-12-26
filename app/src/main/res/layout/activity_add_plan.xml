@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F6FA"
     android:padding="16dp">
 
     <!-- Screen Title -->
@@ -12,44 +13,83 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create New Plan"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#212121"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Plan Title -->
-    <EditText
-        android:id="@+id/etPlanTitle"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPlanTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Plan Title"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="#212121"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:hintTextColor="#616161"
         app:layout_constraintTop_toBottomOf="@id/tvAddPlan"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPlanTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Plan Title"
+            android:textColor="#212121"
+            android:textSize="15sp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <!-- Plan Date -->
-    <EditText
-        android:id="@+id/etPlanDate"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilPlanDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Select Date"
-        android:focusable="false"
-        android:clickable="true"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/etPlanTitle"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:boxStrokeColor="#212121"
+        app:boxStrokeWidthFocused="2dp"
+        app:boxStrokeWidth="1dp"
+        app:hintTextColor="#616161"
+        app:layout_constraintTop_toBottomOf="@id/tilPlanTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etPlanDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Select Date"
+            android:textColor="#212121"
+            android:textSize="15sp"
+            android:focusable="false"
+            android:clickable="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <!-- Save Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSavePlan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
         android:text="Save Plan"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/etPlanDate"
+        android:textSize="15sp"
+        android:layout_marginTop="28dp"
+        app:cornerRadius="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tilPlanDate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
