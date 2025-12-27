@@ -61,6 +61,13 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(RangeTargetFragment())
                     true
                 }
+                R.id.nav_subtopics_range -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, SubtopicsRangeFragment())
+                        .commit()
+                    true
+                }
+
                 else -> false
             }
         }
