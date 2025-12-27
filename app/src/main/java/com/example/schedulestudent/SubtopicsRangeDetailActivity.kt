@@ -1,6 +1,8 @@
 package com.example.schedulestudent
 
 import android.os.Bundle
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,7 @@ import kotlinx.coroutines.launch
 class SubtopicsRangeDetailActivity : AppCompatActivity() {
 
     private var rangeId: Int = -1
+    private val tempSubtopics = mutableListOf<SubtopicEntity>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,35 +29,57 @@ class SubtopicsRangeDetailActivity : AppCompatActivity() {
         val tvProgress = findViewById<TextView>(R.id.tvProgress)
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         val recyclerView = findViewById<RecyclerView>(R.id.rvSubtopics)
+        val btnUpdate = findViewById<Button>(R.id.btnUpdate)
+        val btnBack = findViewById<ImageView>(R.id.ivBack)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
             val db = PlanDatabase.getDatabase(this@SubtopicsRangeDetailActivity)
-            val subtopics = db.subtopicDao().getByRangeId(rangeId)
 
-            val adapter = SubtopicsCheckboxAdapter(
-                subtopics.toMutableList()
-            ) {
-                // checkbox toggled → update DB & progress
-                lifecycleScope.launch {
-                    db.subtopicDao().updateCompletion(it.id, it.isCompleted)
-                    updateProgress(db, tvProgress, progressBar)
+            // Load once from DB
+            tempSubtopics.clear()
+            tempSubtopics.addAll(db.subtopicDao().getByRangeId(rangeId))
+
+            recyclerView.adapter = SubtopicsCheckboxAdapter(
+                tempSubtopics
+            ) { updatedItem ->
+                // 🔁 Only update memory
+                val index = tempSubtopics.indexOfFirst { it.id == updatedItem.id }
+                if (index != -1) {
+                    tempSubtopics[index] = updatedItem
                 }
+                updateProgress(tvProgress, progressBar)
             }
 
-            recyclerView.adapter = adapter
-            updateProgress(db, tvProgress, progressBar)
+            updateProgress(tvProgress, progressBar)
+        }
+
+        // ✅ Save ONLY on Update
+        btnUpdate.setOnClickListener {
+            lifecycleScope.launch {
+                val db = PlanDatabase.getDatabase(this@SubtopicsRangeDetailActivity)
+
+                tempSubtopics.forEach {
+                    db.subtopicDao().updateCompletion(it.id, it.isCompleted)
+                }
+
+                finish()
+            }
+        }
+
+        // Back without saving
+        btnBack.setOnClickListener {
+            finish()
         }
     }
 
-    private suspend fun updateProgress(
-        db: PlanDatabase,
+    private fun updateProgress(
         tv: TextView,
         bar: ProgressBar
     ) {
-        val total = db.subtopicDao().getTotalCount(rangeId)
-        val completed = db.subtopicDao().getCompletedCount(rangeId)
+        val total = tempSubtopics.size
+        val completed = tempSubtopics.count { it.isCompleted }
 
         val percent =
             if (total == 0) 0 else (completed * 100) / total

@@ -15,6 +15,10 @@ import kotlinx.coroutines.launch
 
 class SubtopicsRangeFragment : Fragment() {
 
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var emptyState: TextView
+    private lateinit var addButton: Button
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,34 +31,11 @@ class SubtopicsRangeFragment : Fragment() {
             false
         )
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.rvSubtopicsRange)
-        val emptyState = view.findViewById<TextView>(R.id.tvEmptyState)
-        val addButton = view.findViewById<Button>(R.id.btnAddSubtopicsRange)
+        recyclerView = view.findViewById(R.id.rvSubtopicsRange)
+        emptyState = view.findViewById(R.id.tvEmptyState)
+        addButton = view.findViewById(R.id.btnAddSubtopicsRange)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        // Load data from DB
-        viewLifecycleOwner.lifecycleScope.launch {
-            val db = PlanDatabase.getDatabase(requireContext())
-            val list = db.subtopicsRangeDao().getAll()
-
-            if (list.isEmpty()) {
-                emptyState.visibility = View.VISIBLE
-                recyclerView.visibility = View.GONE
-            } else {
-                emptyState.visibility = View.GONE
-                recyclerView.visibility = View.VISIBLE
-
-                recyclerView.adapter = SubtopicsRangeAdapter(list) { selectedItem ->
-                    val intent = Intent(
-                        requireContext(),
-                        SubtopicsRangeDetailActivity::class.java
-                    )
-                    intent.putExtra("RANGE_ID", selectedItem.id)
-                    startActivity(intent)
-                }
-            }
-        }
 
         addButton.setOnClickListener {
             startActivity(
@@ -65,6 +46,53 @@ class SubtopicsRangeFragment : Fragment() {
             )
         }
 
+        // Initial load
+        loadSubtopicsRanges()
+
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 🔁 Refresh every time fragment comes back
+        loadSubtopicsRanges()
+    }
+
+    private fun loadSubtopicsRanges() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val db = PlanDatabase.getDatabase(requireContext())
+            val ranges = db.subtopicsRangeDao().getAll()
+
+            if (ranges.isEmpty()) {
+                emptyState.visibility = View.VISIBLE
+                recyclerView.visibility = View.GONE
+            } else {
+                emptyState.visibility = View.GONE
+                recyclerView.visibility = View.VISIBLE
+
+                val uiModels = ranges.map { range ->
+                    val total = db.subtopicDao().getTotalCount(range.id)
+                    val completed = db.subtopicDao().getCompletedCount(range.id)
+
+                    SubtopicsRangeUiModel(
+                        id = range.id,
+                        title = range.title,
+                        startDate = range.startDate,
+                        endDate = range.endDate,
+                        completedCount = completed,
+                        totalCount = total
+                    )
+                }
+
+                recyclerView.adapter = SubtopicsRangeAdapter(uiModels) { selected ->
+                    val intent = Intent(
+                        requireContext(),
+                        SubtopicsRangeDetailActivity::class.java
+                    )
+                    intent.putExtra("RANGE_ID", selected.id)
+                    startActivity(intent)
+                }
+            }
+        }
     }
 }

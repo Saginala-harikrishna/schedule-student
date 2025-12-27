@@ -5,8 +5,10 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_marginBottom="8dp"
-    android:background="@android:color/white">
+    android:background="@drawable/bg_subtopics_range_item"
+    >
 
+    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
@@ -14,11 +16,29 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+    <!-- Dates -->
     <TextView
         android:id="@+id/tvDates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
+        android:layout_marginTop="2dp" />
+
+    <!-- Progress Text -->
+    <TextView
+        android:id="@+id/tvProgressSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_marginTop="6dp" />
+
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
         android:layout_marginTop="4dp" />
 
 </LinearLayout>

@@ -3,17 +3,20 @@ package com.example.schedulestudent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class SubtopicsRangeAdapter(
-    private val items: List<SubtopicsRangeEntity>,
-    private val onItemClick: (SubtopicsRangeEntity) -> Unit
+    private val items: List<SubtopicsRangeUiModel>,
+    private val onItemClick: (SubtopicsRangeUiModel) -> Unit
 ) : RecyclerView.Adapter<SubtopicsRangeAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.tvTitle)
         val dates: TextView = itemView.findViewById(R.id.tvDates)
+        val progressText: TextView = itemView.findViewById(R.id.tvProgressSummary)
+        val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,6 +30,11 @@ class SubtopicsRangeAdapter(
 
         holder.title.text = item.title
         holder.dates.text = "${item.startDate} - ${item.endDate}"
+
+        holder.progressText.text =
+            "${item.completedCount} / ${item.totalCount} completed (${item.progressPercent}%)"
+
+        holder.progressBar.progress = item.progressPercent
 
         holder.itemView.setOnClickListener {
             onItemClick(item)
