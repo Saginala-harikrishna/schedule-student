@@ -2,14 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
+    <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Subtopics Range"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <!-- Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="12dp" />
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSubtopicsRange"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Empty State -->
+    <TextView
+        android:id="@+id/tvEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="No subtopics range plans yet"
+        android:visibility="gone" />
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/btnAddSubtopicsRange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Subtopics Range"
+        android:layout_marginTop="12dp" />
 
 </LinearLayout>

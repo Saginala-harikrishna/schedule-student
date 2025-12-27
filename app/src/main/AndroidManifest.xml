@@ -18,6 +18,8 @@
 
         <activity android:name=".AddPlanActivity" />
         <activity android:name=".AddRangeTargetActivity" />
+        <activity android:name=".AddSubtopicsRangeActivity" />
+
         <activity
             android:name=".HomeActivity"
             android:exported="true">

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Subtopics Range Title" />
+
+        <!-- Start Date -->
+        <EditText
+            android:id="@+id/etStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Start Date"
+            android:focusable="false"
+            android:layout_marginTop="12dp" />
+
+        <!-- End Date -->
+        <EditText
+            android:id="@+id/etEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="End Date"
+            android:focusable="false"
+            android:layout_marginTop="8dp" />
+
+        <!-- Subtopic Input -->
+        <EditText
+            android:id="@+id/etSubtopic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter subtopic"
+            android:layout_marginTop="16dp" />
+
+        <!-- Add Subtopic Button -->
+        <Button
+            android:id="@+id/btnAddSubtopic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Subtopic"
+            android:layout_marginTop="8dp" />
+
+        <!-- Subtopics List -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSubtopics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Subtopics Range"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+
+</ScrollView>
