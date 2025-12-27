@@ -19,6 +19,8 @@
         <activity android:name=".AddPlanActivity" />
         <activity android:name=".AddRangeTargetActivity" />
         <activity android:name=".AddSubtopicsRangeActivity" />
+        <activity android:name=".SubtopicsRangeDetailActivity" />
+
 
         <activity
             android:name=".HomeActivity"

@@ -8,16 +8,22 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         Plan::class,
-        RangeTarget::class
+        RangeTarget::class,
+        SubtopicsRangeEntity::class,
+        SubtopicEntity::class
     ],
     version = 2,
     exportSchema = false
 )
 abstract class PlanDatabase : RoomDatabase() {
 
+    // FIXED: Correct DAO name
     abstract fun planDao(): PlanDao
-
     abstract fun rangeTargetDao(): RangeTargetDao
+
+    // New feature DAOs
+    abstract fun subtopicsRangeDao(): SubtopicsRangeDao
+    abstract fun subtopicDao(): SubtopicDao
 
     companion object {
 
@@ -33,7 +39,6 @@ abstract class PlanDatabase : RoomDatabase() {
                 )
                     .fallbackToDestructiveMigration()
                     .build()
-
                 INSTANCE = instance
                 instance
             }
