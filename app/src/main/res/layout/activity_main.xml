@@ -13,7 +13,7 @@
         android:layout_height="68dp"
         android:background="@android:color/white"
         android:elevation="3dp"
-        android:paddingTop="14dp"
+        android:paddingTop="1dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:title="Schedule Student"
@@ -21,9 +21,11 @@
         android:subtitleTextColor="#616161"
         app:titleTextAppearance="@style/ToolbarTitle"
         app:popupTheme="@style/ToolbarPopupTheme"
+        app:navigationIcon="@android:drawable/ic_menu_revert"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
 
 
     <!-- Fragment Container -->

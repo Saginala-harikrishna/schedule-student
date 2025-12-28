@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.work.WorkManager
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.ExistingPeriodicWorkPolicy
+import android.content.Intent
+
 
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -34,9 +36,13 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        intent.getStringExtra(NotificationNav.ARG_SOURCE)?.let { source ->
-            when (source) {
 
+        bottomNav = findViewById(R.id.bottom_navigation)
+
+        val source = intent.getStringExtra(NotificationNav.ARG_SOURCE)
+
+        if (savedInstanceState == null) {
+            when (source) {
                 NotificationNav.FROM_CURRENT -> {
                     loadFragment(CurrentTargetFragment())
                     bottomNav.selectedItemId = R.id.nav_current
@@ -51,6 +57,12 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(SubtopicsRangeFragment())
                     bottomNav.selectedItemId = R.id.nav_subtopics_range
                 }
+
+                else -> {
+                    // App launched normally (not from Home)
+                    loadFragment(CurrentTargetFragment())
+                    bottomNav.selectedItemId = R.id.nav_current
+                }
             }
         }
 
@@ -61,15 +73,20 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        toolbar.setNavigationOnClickListener {
+            navigateToHome()
+        }
+
+
+
+
         // -------------------------
         // Bottom Navigation
         // -------------------------
-        bottomNav = findViewById(R.id.bottom_navigation)
 
-        if (savedInstanceState == null) {
-            loadFragment(CurrentTargetFragment())
-            bottomNav.selectedItemId = R.id.nav_current
-        }
+
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -163,6 +180,13 @@ class MainActivity : AppCompatActivity() {
             else
                 R.id.nav_range
     }
+
+    private fun navigateToHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
+    }
+
 
     // -------------------------
     // 🔔 WorkManager scheduling
