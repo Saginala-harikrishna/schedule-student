@@ -1,5 +1,6 @@
 package com.example.schedulestudent
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -39,22 +40,16 @@ class SubtopicsRangeFragment : Fragment() {
 
         addButton.setOnClickListener {
             startActivity(
-                Intent(
-                    requireContext(),
-                    AddSubtopicsRangeActivity::class.java
-                )
+                Intent(requireContext(), AddSubtopicsRangeActivity::class.java)
             )
         }
 
-        // Initial load
         loadSubtopicsRanges()
-
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        // 🔁 Refresh every time fragment comes back
         loadSubtopicsRanges()
     }
 
@@ -84,15 +79,54 @@ class SubtopicsRangeFragment : Fragment() {
                     )
                 }
 
-                recyclerView.adapter = SubtopicsRangeAdapter(uiModels) { selected ->
-                    val intent = Intent(
-                        requireContext(),
-                        SubtopicsRangeDetailActivity::class.java
-                    )
-                    intent.putExtra("RANGE_ID", selected.id)
-                    startActivity(intent)
-                }
+                recyclerView.adapter = SubtopicsRangeAdapter(
+                    items = uiModels,
+
+                    onItemClick = { selected ->
+                        val intent = Intent(
+                            requireContext(),
+                            SubtopicsRangeDetailActivity::class.java
+                        )
+                        intent.putExtra("RANGE_ID", selected.id)
+                        startActivity(intent)
+                    },
+
+                    onEditClick = { selected ->
+                        val intent = Intent(
+                            requireContext(),
+                            AddSubtopicsRangeActivity::class.java
+                        )
+                        intent.putExtra("EDIT_RANGE_ID", selected.id)
+                        startActivity(intent)
+                    },
+
+                    onDeleteClick = { selected ->
+                        if (selected.isCompleted) {
+                            deleteRange(selected.id)
+                        } else {
+                            AlertDialog.Builder(requireContext())
+                                .setTitle("Delete incomplete plan?")
+                                .setMessage(
+                                    "This plan is not fully completed. Are you sure you want to delete it?"
+                                )
+                                .setPositiveButton("Delete") { _, _ ->
+                                    deleteRange(selected.id)
+                                }
+                                .setNegativeButton("Cancel", null)
+                                .show()
+                        }
+                    }
+                )
             }
+        }
+    }
+
+    // ✅ MUST be outside loadSubtopicsRanges()
+    private fun deleteRange(rangeId: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val db = PlanDatabase.getDatabase(requireContext())
+            db.subtopicsRangeDao().deleteById(rangeId)
+            loadSubtopicsRanges()
         }
     }
 }

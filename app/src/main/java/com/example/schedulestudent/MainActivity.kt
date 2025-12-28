@@ -34,6 +34,26 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        intent.getStringExtra(NotificationNav.ARG_SOURCE)?.let { source ->
+            when (source) {
+
+                NotificationNav.FROM_CURRENT -> {
+                    loadFragment(CurrentTargetFragment())
+                    bottomNav.selectedItemId = R.id.nav_current
+                }
+
+                NotificationNav.FROM_RANGE -> {
+                    loadFragment(RangeTargetFragment())
+                    bottomNav.selectedItemId = R.id.nav_range
+                }
+
+                NotificationNav.FROM_SUBTOPICS_RANGE -> {
+                    loadFragment(SubtopicsRangeFragment())
+                    bottomNav.selectedItemId = R.id.nav_subtopics_range
+                }
+            }
+        }
+
 
         // -------------------------
         // Toolbar

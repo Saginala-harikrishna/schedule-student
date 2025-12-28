@@ -10,4 +10,8 @@ data class SubtopicsRangeUiModel(
 ) {
     val progressPercent: Int
         get() = if (totalCount == 0) 0 else (completedCount * 100) / totalCount
+
+    val isCompleted: Boolean
+        get() = totalCount > 0 && completedCount == totalCount
+
 }

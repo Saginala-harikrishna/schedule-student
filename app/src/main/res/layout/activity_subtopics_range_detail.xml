@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:background="@android:color/white">
 
+
     <!-- Top Bar (consistent with app design) -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,17 +16,20 @@
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="5dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
+
             android:src="@android:drawable/ic_media_previous"
             android:contentDescription="Back" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Subtopics Progress"
             android:textSize="18sp"
+            android:textColor="@color/black"
             android:layout_marginTop="5dp"
             android:textStyle="bold"
             android:layout_marginStart="12dp" />
@@ -44,6 +48,7 @@
             android:id="@+id/tvProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:text="Progress"
             android:textStyle="bold" />
 

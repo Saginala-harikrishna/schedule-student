@@ -4,20 +4,21 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Calendar
-import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-
-
+import java.util.Calendar
 
 class AddSubtopicsRangeActivity : AppCompatActivity() {
 
-    private val subtopicsList = mutableListOf<String>()
+    private val subtopicsList = mutableListOf<EditableSubtopic>()
     private lateinit var adapter: SubtopicTempAdapter
+
+    // Edit mode support
+    private var editRangeId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,17 +32,53 @@ class AddSubtopicsRangeActivity : AppCompatActivity() {
         val rvSubtopics = findViewById<RecyclerView>(R.id.rvSubtopics)
         val btnSave = findViewById<Button>(R.id.btnSave)
 
+        // Detect edit mode
+        editRangeId = intent.getIntExtra("EDIT_RANGE_ID", -1)
+            .takeIf { it != -1 }
 
         // RecyclerView setup
         adapter = SubtopicTempAdapter(subtopicsList)
         rvSubtopics.layoutManager = LinearLayoutManager(this)
         rvSubtopics.adapter = adapter
 
-        // Add subtopic logic
+        // STEP 3 — Load existing data if editing
+        if (editRangeId != null) {
+            lifecycleScope.launch {
+                val db = PlanDatabase.getDatabase(this@AddSubtopicsRangeActivity)
+
+                val range = db.subtopicsRangeDao().getById(editRangeId!!)
+                val subtopics = db.subtopicDao().getByRangeId(editRangeId!!)
+
+                etTitle.setText(range.title)
+                etStartDate.setText(range.startDate)
+                etEndDate.setText(range.endDate)
+
+                subtopicsList.clear()
+                subtopicsList.addAll(
+                    subtopics.map {
+                        EditableSubtopic(
+                            id = it.id,
+                            title = it.title,
+                            isCompleted = it.isCompleted
+                        )
+                    }
+                )
+
+                adapter.notifyDataSetChanged()
+            }
+        }
+
+        // Add subtopic (UI only)
         btnAddSubtopic.setOnClickListener {
-            val subtopicText = etSubtopic.text.toString().trim()
-            if (subtopicText.isNotEmpty()) {
-                subtopicsList.add(subtopicText)
+            val text = etSubtopic.text.toString().trim()
+            if (text.isNotEmpty()) {
+                subtopicsList.add(
+                    EditableSubtopic(
+                        id = null,
+                        title = text,
+                        isCompleted = false
+                    )
+                )
                 adapter.notifyItemInserted(subtopicsList.size - 1)
                 etSubtopic.text.clear()
             }
@@ -49,17 +86,14 @@ class AddSubtopicsRangeActivity : AppCompatActivity() {
 
         // Date pickers
         etStartDate.setOnClickListener {
-            showDatePicker { selectedDate ->
-                etStartDate.setText(selectedDate)
-            }
+            showDatePicker { etStartDate.setText(it) }
         }
 
         etEndDate.setOnClickListener {
-            showDatePicker { selectedDate ->
-                etEndDate.setText(selectedDate)
-            }
+            showDatePicker { etEndDate.setText(it) }
         }
 
+        // Save logic (CREATE + EDIT with preservation)
         btnSave.setOnClickListener {
 
             val title = etTitle.text.toString().trim()
@@ -67,56 +101,89 @@ class AddSubtopicsRangeActivity : AppCompatActivity() {
             val endDate = etEndDate.text.toString().trim()
 
             when {
-                title.isEmpty() -> {
-                    etTitle.error = "Title is required"
-                }
-
-                startDate.isEmpty() -> {
-                    etStartDate.error = "Start date is required"
-                }
-
-                endDate.isEmpty() -> {
-                    etEndDate.error = "End date is required"
-                }
-
-                subtopicsList.isEmpty() -> {
-                    Toast.makeText(
-                        this,
-                        "Add at least one subtopic",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                !isEndDateAfterStart(startDate, endDate) -> {
-                    Toast.makeText(
-                        this,
-                        "End date must be after start date",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                title.isEmpty() -> etTitle.error = "Title is required"
+                startDate.isEmpty() -> etStartDate.error = "Start date is required"
+                endDate.isEmpty() -> etEndDate.error = "End date is required"
+                subtopicsList.isEmpty() ->
+                    Toast.makeText(this, "Add at least one subtopic", Toast.LENGTH_SHORT).show()
+                !isEndDateAfterStart(startDate, endDate) ->
+                    Toast.makeText(this, "End date must be after start date", Toast.LENGTH_SHORT).show()
 
                 else -> lifecycleScope.launch {
 
                     val db = PlanDatabase.getDatabase(this@AddSubtopicsRangeActivity)
 
-                    // 1️⃣ Insert main plan
-                    val rangeId = db.subtopicsRangeDao().insert(
-                        SubtopicsRangeEntity(
-                            title = title,
-                            startDate = startDate,
-                            endDate = endDate
-                        )
-                    ).toInt()
+                    // ---------------- CREATE MODE ----------------
+                    if (editRangeId == null) {
 
-                    // 2️⃣ Insert subtopics
-                    val subtopicEntities = subtopicsList.map {
-                        SubtopicEntity(
-                            subtopicsRangeId = rangeId,
-                            title = it
-                        )
+                        val rangeId = db.subtopicsRangeDao().insert(
+                            SubtopicsRangeEntity(
+                                title = title,
+                                startDate = startDate,
+                                endDate = endDate
+                            )
+                        ).toInt()
+
+                        val entities = subtopicsList.map {
+                            SubtopicEntity(
+                                subtopicsRangeId = rangeId,
+                                title = it.title,
+                                isCompleted = false
+                            )
+                        }
+
+                        db.subtopicDao().insertAll(entities)
+
                     }
+                    // ---------------- EDIT MODE (STEP 4) ----------------
+                    else {
 
-                    db.subtopicDao().insertAll(subtopicEntities)
+                        // Update parent
+                        db.subtopicsRangeDao().update(
+                            SubtopicsRangeEntity(
+                                id = editRangeId!!,
+                                title = title,
+                                startDate = startDate,
+                                endDate = endDate
+                            )
+                        )
+
+                        val existingDbSubtopics =
+                            db.subtopicDao().getByRangeId(editRangeId!!)
+
+                        val existingUi = subtopicsList.filter { it.id != null }
+                        val newUi = subtopicsList.filter { it.id == null }
+
+                        // Update existing subtopics
+                        existingUi.forEach {
+                            db.subtopicDao().update(
+                                SubtopicEntity(
+                                    id = it.id!!,
+                                    subtopicsRangeId = editRangeId!!,
+                                    title = it.title,
+                                    isCompleted = it.isCompleted
+                                )
+                            )
+                        }
+
+                        // Insert new subtopics
+                        val newEntities = newUi.map {
+                            SubtopicEntity(
+                                subtopicsRangeId = editRangeId!!,
+                                title = it.title,
+                                isCompleted = false
+                            )
+                        }
+                        db.subtopicDao().insertAll(newEntities)
+
+                        // Delete removed subtopics
+                        val uiIds = existingUi.map { it.id!! }.toSet()
+                        existingDbSubtopics.forEach {
+                            if (it.id !in uiIds) {
+                                db.subtopicDao().deleteById(it.id)
+                            }
+                        }
+                    }
 
                     Toast.makeText(
                         this@AddSubtopicsRangeActivity,
@@ -126,32 +193,21 @@ class AddSubtopicsRangeActivity : AppCompatActivity() {
 
                     finish()
                 }
-
             }
         }
-
     }
+
+    // ---------------- Helpers (UNCHANGED) ----------------
 
     private fun showDatePicker(onDateSelected: (String) -> Unit) {
         val calendar = Calendar.getInstance()
-
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(
+        DatePickerDialog(
             this,
-            { _, selectedYear, selectedMonth, selectedDay ->
-                val formattedDate =
-                    "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                onDateSelected(formattedDate)
-            },
-            year,
-            month,
-            day
-        )
-
-        datePickerDialog.show()
+            { _, y, m, d -> onDateSelected("$d/${m + 1}/$y") },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun isEndDateAfterStart(startDate: String, endDate: String): Boolean {
@@ -159,22 +215,13 @@ class AddSubtopicsRangeActivity : AppCompatActivity() {
         val endParts = endDate.split("/")
 
         val startCalendar = Calendar.getInstance().apply {
-            set(
-                startParts[2].toInt(),
-                startParts[1].toInt() - 1,
-                startParts[0].toInt()
-            )
+            set(startParts[2].toInt(), startParts[1].toInt() - 1, startParts[0].toInt())
         }
 
         val endCalendar = Calendar.getInstance().apply {
-            set(
-                endParts[2].toInt(),
-                endParts[1].toInt() - 1,
-                endParts[0].toInt()
-            )
+            set(endParts[2].toInt(), endParts[1].toInt() - 1, endParts[0].toInt())
         }
 
         return !endCalendar.before(startCalendar)
     }
-
 }

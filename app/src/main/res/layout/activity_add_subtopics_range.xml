@@ -1,70 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <LinearLayout
+    <!-- Header -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:text="Create Subtopics Range"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:textColor="#212121" />
 
-        <!-- Title -->
-        <EditText
-            android:id="@+id/etTitle"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Subtopics Range Title" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Start Date -->
-        <EditText
-            android:id="@+id/etStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Start Date"
-            android:focusable="false"
-            android:layout_marginTop="12dp" />
+            <!-- Basic Details Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Basic Details"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginBottom="8dp" />
 
-        <!-- End Date -->
-        <EditText
-            android:id="@+id/etEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="End Date"
-            android:focusable="false"
-            android:layout_marginTop="8dp" />
+            <EditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Subtopics Range Title"
+                android:textColor="#212121"
+                android:textColorHint="#757575"
+                android:textCursorDrawable="@null" />
 
-        <!-- Subtopic Input -->
-        <EditText
-            android:id="@+id/etSubtopic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter subtopic"
-            android:layout_marginTop="16dp" />
+            <EditText
+                android:id="@+id/etStartDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Start Date"
+                android:focusable="false"
+                android:layout_marginTop="12dp"
+                android:textColor="#212121"
+                android:textColorHint="#757575" />
 
-        <!-- Add Subtopic Button -->
-        <Button
-            android:id="@+id/btnAddSubtopic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Subtopic"
-            android:layout_marginTop="8dp" />
+            <EditText
+                android:id="@+id/etEndDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="End Date"
+                android:focusable="false"
+                android:layout_marginTop="8dp"
+                android:textColor="#212121"
+                android:textColorHint="#757575" />
 
-        <!-- Subtopics List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSubtopics"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            <!-- Subtopics Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Subtopics"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#424242"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp" />
 
-        <!-- Save Button -->
-        <Button
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save Subtopics Range"
-            android:layout_marginTop="24dp" />
+            <EditText
+                android:id="@+id/etSubtopic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter subtopic"
+                android:textColor="#212121"
+                android:textColorHint="#757575"
+                android:textCursorDrawable="@null" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnAddSubtopic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Subtopic"
+                android:layout_marginTop="8dp" />
 
-</ScrollView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSubtopics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Primary Action -->
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Subtopics Range"
+        android:layout_margin="16dp" />
+
+</LinearLayout>
