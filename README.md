@@ -1,3 +1,5 @@
+App Link :/docs/app-debug.apk
+
  📚 Schedule Student – Smart Study Planning App
 Schedule Student is an Android application designed to help students effectively plan, track, and manage their academic tasks and goals.
 The app supports daily tasks, range-based goals, and subtopic-wise planning, enabling structured progress tracking with a clean and intuitive user experience.
